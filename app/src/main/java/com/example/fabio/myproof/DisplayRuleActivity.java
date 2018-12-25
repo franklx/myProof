@@ -62,7 +62,7 @@ public class DisplayRuleActivity  extends AppCompatActivity {
         ArrayList<String> required = new ArrayList<String>();
         required.addAll(Arrays.asList(searchText.getText().toString().split(" ")));
         displayedCommand.clear();
-        for (String item:store.names) {
+        for (String item:store.keySet()) {
             list.clear();
             list.addAll(Arrays.asList(item.split("_")));
             if (list.containsAll(required))

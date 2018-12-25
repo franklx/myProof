@@ -21,8 +21,6 @@ import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 
-import java.util.Collections;
-
 import io.github.kexanie.library.MathView;
 
 import static com.example.fabio.myproof.R.layout.file;
@@ -181,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
     private void setAdapter() {
         if (adapter.getCount()>0)
             adapter.clear();
-        Collections.sort(store.names);
-        for (String item:store.names)
+        //Collections.sort(store.keySet());
+        for (String item:store.keySet())
             adapter.add(item.replace("_"," "));
         adapter.notifyDataSetChanged();
     }
