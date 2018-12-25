@@ -19,7 +19,7 @@ public class Command implements Serializable {
     String latex;
     Bracket[] brackets;
     Token[] definition;
-    String[] source;
+    private String[] source;
 
     Command() { //Construct a blank command
         name = "blank";
@@ -28,7 +28,6 @@ public class Command implements Serializable {
         latex = "";
         brackets = new Bracket[0];
         definition = new Token[0];
-        source = new String[0];
     }
     Command(String constant) {
         definition = new Token[0];
@@ -52,21 +51,18 @@ public class Command implements Serializable {
     }
 
     void loadDefinition() {
-        if (definition==null) {
-            definition = new Token[source.length];
-            for (int i=0;i<definition.length;i++)
-                definition[i] = new Token(source[i]);
-        }
+        definition = new Token[source.length];
+        for (int i=0;i<definition.length;i++)
+            definition[i] = new Token(source[i]);
+        source = null;
     }
     public void set(List<String> fileSource) {
         description = fileSource.get(0).replace("  "," blank ");
         type = fileSource.get(1).split("->");
         latex = fileSource.get(2);
         setBrackets(fileSource.get(3));
-        source = new String[fileSource.size()-4];
         definition = new Token[fileSource.size()-4];
         for (int i=0;i<definition.length;i++) {
-            source[i] = fileSource.get(i + 4);
             definition[i] = new Token(fileSource.get(i + 4));
         }
     }
@@ -77,7 +73,6 @@ public class Command implements Serializable {
         latex = command.latex;
         brackets = command.brackets;
         definition = command.definition;
-        source = command.source;
     }
     void setConstant(String s) {
         name = s; //name = s.replace("\\","");
@@ -94,18 +89,15 @@ public class Command implements Serializable {
         }
         setBrackets();
         definition = new Token[0];
-        source = new String[0];
     }
     void setDefinition(Steps steps) {
         definition = new Token[steps.size()];
-        source = new String[steps.size()];
         ArrayList<String> typeList = new ArrayList<>();
         ArrayList<String> argsList = new ArrayList<>();
         ArrayList<String> seqsList = new ArrayList<>();
         String output, code;
         for (int i=0;i<steps.size();i++) {
             definition[i] = steps.get(i);
-            source[i] = steps.get(i).toString();
             if (steps.get(i).isGeneric()) {
                 output = steps.reduced.get(i).get(0).output();
                 code = steps.reduced.get(i).getLaTeXCode();
@@ -198,7 +190,7 @@ public class Command implements Serializable {
         }
         return false;
     }
-    boolean isReducible() {return source.length>0 || arity()>0 || name.startsWith("§");}
+    boolean isReducible() {return definition.length>0 || arity()>0 || name.startsWith("§");}
 
     private Token applyDefinitionTo(Token[] arg) {
         // Apply these steps to the list of (reduced) tokens arg.

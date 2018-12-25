@@ -17,15 +17,14 @@ public class Token extends ArrayList<Command> {
     public int index;
 
     public Token() {
-        add(store.BLANK);
+        add(store.get("blank"));
         index = 0;
     }
     public Token(List<Command> list) {
-        if (list.isEmpty()) add(store.BLANK);
+        if (list.isEmpty()) add(store.get("blank"));
         else addAll(list);
         index = 0;
         resize();
-        int a=0;
     }
     public Token(Command command, Token... arg) {
         add(command);
@@ -35,7 +34,7 @@ public class Token extends ArrayList<Command> {
     }
     public Token(String commandName, Token... arg) {this(store.get(commandName),arg);}
     public Token(String source) {
-        if (source.isEmpty()) super.add(store.BLANK);
+        if (source.isEmpty()) super.add(store.get("blank"));
         else for (String item:source.split(" ")) {
             super.add(store.get(item));
         }
@@ -55,7 +54,7 @@ public class Token extends ArrayList<Command> {
     private void resize() {
         int n = next(0);
         if (n<size()) removeRange(n,size());
-        else while (n>size()) super.add(store.BLANK);
+        else while (n>size()) super.add(store.get("blank"));
     }
     int arity(int i) {
         try{return get(i).arity();}
@@ -127,7 +126,7 @@ public class Token extends ArrayList<Command> {
         removeRange(i,next(i));
         add(i++,command);
         for (int n=0;n<command.arity();n++)
-            add(i,store.BLANK);
+            add(i,store.get("blank"));
     }
     void put(Command command) {put(index,command);}
 
@@ -152,7 +151,7 @@ public class Token extends ArrayList<Command> {
             if (n==0) {
                 addAll(i,arg0);
                 i += arg0.size();
-            } else add(i,store.BLANK);
+            } else add(i,store.get("blank"));
     }
     public void app(int i,String name) {app(i,store.get(name));}
     public void app(Command command) {app(index,command);}
@@ -166,7 +165,7 @@ public class Token extends ArrayList<Command> {
 
     private void putReference(int i,Token active) {
         int j = 0;
-        if (i<0||i>=size()) active.put(store.BLANK);
+        if (i<0||i>=size()) active.put(store.get("blank"));
         while (j<size())
             if (j++==i) return;
             else {
@@ -179,7 +178,7 @@ public class Token extends ArrayList<Command> {
     }
     void putReference(Token active) {
         int i = 0;
-        if (index>=size()) active.put(store.BLANK);
+        if (index>=size()) active.put(store.get("blank"));
         while (i<size())
             if (i++==index) return;
             else {
@@ -195,7 +194,7 @@ public class Token extends ArrayList<Command> {
         for (Command item:this)
             if (item.name.startsWith("§")) {
                 int j = Integer.parseInt(item.name.substring(1));
-                if (t<0 && j==i) item.setCommand(store.BLANK);
+                if (t<0 && j==i) item.setCommand(store.get("blank"));
                 if (j>i) item.setConstant("§" + (j+t));
             }
     }

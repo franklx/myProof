@@ -47,13 +47,16 @@ class Store extends HashMap<String,Command> {
                     temp.add(line);
                     line = buffer.readLine();
                 }
-                put(line.substring(1),new Command(line.substring(1),temp));
+                String name = line.substring(1);
+                put(name,new Command(name,temp));
                 temp.clear();
             }
-            return true;
         } catch (Exception e) {
             return false;
         }
+        for (Command command:values().toArray(new Command[0]))
+            command.loadDefinition();
+        return true;
     }
 
     private String getFileName(String name) {return name.replace(" ","_")+".txt";}
@@ -78,10 +81,7 @@ class Store extends HashMap<String,Command> {
         get(i).set(source);
         return names.set(i,name);
     }
-    void update(String name) {
-        Command command = super.get(name);
-        if (command != null) command.loadDefinition();
-    }
+    void update(String name) {}
     public Command get(String name) {
         if (name.isEmpty()) return super.get("blank");
         if (isConstant(name)) return new Command(name);
@@ -91,7 +91,6 @@ class Store extends HashMap<String,Command> {
             put(name,output);
             return output;
         }
-        output.loadDefinition();
         return output;
     }
 
@@ -113,8 +112,6 @@ class Store extends HashMap<String,Command> {
 
     void update() {
         clear();
-        names.clear();
-        source.clear();
         load();
     }
     void renameSource(String oldName,String newName) {
@@ -162,7 +159,7 @@ class Store extends HashMap<String,Command> {
     }
     private Command load(String name) {
         ArrayList<String> source = loadSource(name);
-        if (name.isEmpty()) return BLANK;
+        if (name.isEmpty()) return get("blank");
         else return new Command(name,source);
     }
     void save(Command command) {
