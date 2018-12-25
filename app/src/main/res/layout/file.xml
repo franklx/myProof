@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_file"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageButton android:tag="clear"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/clear"
+            android:onClick="onClearClick"/>
+        <ImageButton android:tag="save"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/save"
+            android:onClick="onSaveClick"/>
+        <ImageButton android:tag="open"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/open"
+            android:onClick="onOpenClick"/>
+        <ImageButton android:tag="apply"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/apply"
+            android:onClick="onApplyClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageButton android:tag="update"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/update"
+            android:onClick="onUpdateClick"/>
+        <ImageButton android:tag="rename"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/rename"
+            android:onClick="onRenameClick"/>
+        <ImageButton android:tag="check"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/check"
+            android:onClick="onCheckClick"/>
+        <ImageButton android:tag="undo"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/undo"
+            android:onClick="onUndoClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageButton android:tag="source"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/source"
+            android:onClick="onCommandSourceClick"/>
+        <ImageButton android:tag="pack"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/pack"
+            android:onClick="onTabClick"/>
+    </LinearLayout>
+</LinearLayout>

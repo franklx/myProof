@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_sets"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageButton android:tag="in"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/in"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="equal"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/equal"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="subseteq"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/subseteq"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="universe"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_margin="0pt"
+            android:src="@drawable/universe"
+            android:onClick="onCommandClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageButton android:tag="notin"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/notin"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="notequal"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/notequal"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="subset"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/subset"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="empty"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_margin="0pt"
+            android:src="@drawable/empty"
+            android:onClick="onCommandClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageButton android:tag="class"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/classof"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="cup"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/cup"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="cap"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_margin="0pt"
+            android:src="@drawable/cap"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="complement"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/complement"
+            android:onClick="onCommandClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageButton android:tag="set"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/set"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="bigcup"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/bigcup"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="bigcap"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_margin="0pt"
+            android:src="@drawable/bigcap"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="setminus"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/setminus"
+            android:onClick="onCommandClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageButton android:tag="singleton"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/singleton"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="pairset"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/pairset"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="pair"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/pair"
+            android:onClick="onCommandClick"/>
+        <ImageButton android:tag="times"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/times"
+            android:onClick="onCommandClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageButton android:tag="functions"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/functions"
+            android:onClick="onTabClick"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_pack"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageButton android:tag="backup"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/backup"
+            android:onClick="onBackupClick"/>
+        <ImageButton android:tag="restore"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/restore"
+            android:onClick="onBackupClick"/>
+        <ImageButton android:tag="import"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/importp"
+            android:onClick="onBackupClick"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageButton android:tag="new"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/newv"
+            android:onClick="onBackupClick"/>
+        <ImageButton android:tag="save"
+            android:layout_width="@dimen/button_width_large"
+            android:layout_height="@dimen/button_height"
+            android:src="@drawable/save"
+            android:onClick="onBackupClick"/>
+    </LinearLayout>
+</LinearLayout>

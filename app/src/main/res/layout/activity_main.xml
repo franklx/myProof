@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00000000"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+    <Button
+        android:id="@+id/clear_input_text_button"
+        android:text="X"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:onClick="clearInputTextClick"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"/>
+    <AutoCompleteTextView
+        android:id="@+id/input_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/clear_input_text_button"/>
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/frame_hold"
+        android:layout_below="@id/input_text"
+        android:fillViewport="true"
+        android:layout_gravity="top">
+        <LinearLayout
+            android:id="@+id/formulas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout
+        android:id="@+id/frame_hold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/MoveKeys"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageButton android:tag="-1"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="13pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/ups"
+                android:onClick="onShiftStepClick"
+                android:elevation="0dp"
+                android:adjustViewBounds="false"
+                android:cropToPadding="false" />
+            <ImageButton android:tag="-1"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="13pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/rrewind"
+                android:onClick="onShiftLeafClick"/>
+            <ImageButton android:tag="-1"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="14pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/rewind"
+                android:onClick="onShiftTokenClick"
+                android:elevation="0dp" />
+            <ImageButton android:tag="1"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="14pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/forward"
+                android:onClick="onShiftTokenClick"/>
+            <ImageButton android:tag="1"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="13pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/fforward"
+                android:onClick="onShiftLeafClick"/>
+            <ImageButton android:tag="1"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="13pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/down"
+                android:onClick="onShiftStepClick"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageButton android:tag="del"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
+                android:src="@drawable/del"
+                android:onClick="onDelClick"/>
+            <ImageButton android:tag="ac"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="20pt"
+                android:src="@drawable/ac"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:onClick="onAcClick"/>
+            <ImageButton android:id="@+id/input_mode_button"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="20pt"
+                android:src="@drawable/source"
+                android:onClick="onStepSourceClick"/>
+            <ImageButton android:tag="exe"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="20pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/exe"
+                android:onClick="onExeClick"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageButton android:tag="latin"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
+                android:src="@drawable/latin"
+                android:onClick="onTabClick"/>
+            <ImageButton android:tag="logic"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
+                android:src="@drawable/logic"
+                android:onClick="onTabClick"/>
+            <ImageButton android:tag="sets"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
+                android:src="@drawable/sets"
+                android:onClick="onTabClick"/>
+            <ImageButton android:tag="rule"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="20pt"
+                android:layout_margin="0pt"
+                android:src="@drawable/rule"
+                android:onClick="onDisplayClick"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
