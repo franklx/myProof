@@ -238,9 +238,12 @@ public class MainActivity extends AppCompatActivity {
         if (name.isEmpty()) {
             store.set("temp", steps);
             showMessage("Commands saved.");
-        } else if (store.names.contains(name)) {
+        } else if (store.containsKey(name)) {
             confirmDialog.setMessage("Overwrite command "+name+"?");
             confirmDialog.show();
+        } else if (!name.matches("\\w+")) {
+            showMessage("Invalid command name.");
+            return;
         } else if (store.add(new Command(name,steps))) {
             adapter.add(name.replace("_", " "));
             adapter.notifyDataSetChanged();
@@ -279,21 +282,18 @@ public class MainActivity extends AppCompatActivity {
     }
     public void onUpdateClick(View v) {
         inputText.clearFocus();
-        String name = getInputName();
-        if (!name.isEmpty()) {
-            store.update(name);
-            showMessage("Command "+name+" updated.");
-        } else {
-            store.update();
-            showMessage("Commands restored.");
-        }
+        store.update();
+        showMessage("Commands restored.");
         steps.reduceAll();
         showSteps();
     }
     public void onRenameClick(View v) {
         inputText.clearFocus();
         String name = getInputName();
-        if (name.isEmpty()) return;
+        if (!name.matches("\\w+")) {
+            showMessage("Invalid command name.");
+            return;
+        }
         if (steps.size()>1) return;
         Command command = steps.activeStep().get(0);
         //store.renameSource(command.name,name);
@@ -301,8 +301,7 @@ public class MainActivity extends AppCompatActivity {
         setAdapter(name);
         showMessage("Command "+command.name+" renamed.");
         command.rename(name);
-        store.saveAll();
-        //store.save(command);
+        //store.saveAll();
     }
     public void onCheckClick(View v) {
         inputText.clearFocus();
@@ -356,7 +355,11 @@ public class MainActivity extends AppCompatActivity {
         if (steps.onSelect()) return;
         inputText.clearFocus();
         String name = getInputName();
-        if (!name.isEmpty() && steps.isBlank()) {
+        if (!name.matches("\\w+")) {
+            showMessage("Invalid command name.");
+            return;
+        }
+        if (steps.isBlank()) {
             layout.removeViewAt(0);
             Command command = store.get(name);
             EditText etDescription = inflateNewEditText();
@@ -383,7 +386,10 @@ public class MainActivity extends AppCompatActivity {
     }
     private void saveCommandSource(View v) {
         String name = getInputName();
-        if (name.isEmpty()) return;
+        if (!name.matches("\\w+")) {
+            showMessage("Invalid command name.");
+            return;
+        }
         Command command = store.get(name);
         command.description = ((EditText)layout.getChildAt(0)).getText().toString();
         command.type = ((EditText)layout.getChildAt(1)).getText().toString().replace(" ","").split("->");

@@ -88,7 +88,8 @@ class Store extends HashMap<String,Command> {
         Command output = super.get(name);
         if (output==null) {
             output = new Command(name);
-            put(name,output);
+            if (name.matches("\\w+"))
+                put(name,output);
             return output;
         }
         return output;
@@ -176,6 +177,8 @@ class Store extends HashMap<String,Command> {
         try {
             FileWriter writer = new FileWriter(file);
             for (Command command:values()) {
+                if (command.output().equals("Variable") && command.name.equals(command.latex))
+                    continue;
                 writer.append(command.getSource());
                 writer.append("\n");
                 writer.append("@");
