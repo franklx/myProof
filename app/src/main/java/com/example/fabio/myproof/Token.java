@@ -25,6 +25,7 @@ public class Token extends ArrayList<Command> {
         else addAll(list);
         index = 0;
         resize();
+        int a=0;
     }
     public Token(Command command, Token... arg) {
         add(command);
