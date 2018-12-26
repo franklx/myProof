@@ -19,6 +19,7 @@ public class Command implements Serializable {
     String latex;
     Bracket[] brackets;
     Token[] definition;
+    Token conclusion;
     private String[] source;
 
     Command() { //Construct a blank command
@@ -55,6 +56,8 @@ public class Command implements Serializable {
         for (int i=0;i<definition.length;i++)
             definition[i] = new Token(source[i]);
         source = null;
+        if (arity()==0 && definition.length>0)
+            conclusion = new Token(description);
     }
     public void set(List<String> fileSource) {
         description = fileSource.get(0).replace("  "," blank ");
@@ -115,7 +118,7 @@ public class Command implements Serializable {
                     seqsList.add(code);
             }
         }
-        Token conclusion = steps.getLastReducedStep();
+        conclusion = steps.getLastReducedStep();
         String args = "\\(\\begin{array}{l}"
                 + join("\\\\ ",argsList)
                 + "\\end{array}\\)";
@@ -203,7 +206,7 @@ public class Command implements Serializable {
     private Token applyDefinitionTo(Token[] arg) {
         // Apply these steps to the list of (reduced) tokens arg.
         ArrayList<Token> reduced = new ArrayList<>();
-        if (arg.length==0 && !description.isEmpty()) return new Token(description);
+        if (arg.length==0) return conclusion;
         int n = 0;
         for (Token step:definition)
             if (step.isGeneric()) {
