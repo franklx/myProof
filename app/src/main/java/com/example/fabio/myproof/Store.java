@@ -144,6 +144,11 @@ class Store extends HashMap<String,Command> {
             } catch (Exception e) {}
         update();
     }
+    void rename(Command command,String newName) {
+        remove(command.name);
+        command.rename(newName);
+        put(newName,command);
+    }
 
     private ArrayList<String> loadSource(String name) {
         ArrayList<String> source = new ArrayList<>();

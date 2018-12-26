@@ -21,6 +21,9 @@ import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.kexanie.library.MathView;
 
 import static com.example.fabio.myproof.R.layout.file;
@@ -172,7 +175,9 @@ public class MainActivity extends AppCompatActivity {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
-        for (String item:store.keySet())
+        List<String> names = new ArrayList<>(store.keySet());
+        java.util.Collections.sort(names);
+        for (String item:names)
             adapter.add(item.replace("_"," "));
         inputText.setAdapter(adapter);
     }
@@ -248,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
             showMessage("Command " + name + " saved.");
         } else showMessage("Command " + name + " not saved.");
         store.saveAll();
-        store.update();
     }
     public void onOpenClick(View v) {
         inputText.clearFocus();
@@ -281,12 +285,17 @@ public class MainActivity extends AppCompatActivity {
     public void onUpdateClick(View v) {
         inputText.clearFocus();
         store.update();
+        setAdapter();
         showMessage("Commands restored.");
         steps.reduceAll();
         showSteps();
     }
     public void onRenameClick(View v) {
         inputText.clearFocus();
+        if (onEditSource()) {
+            showMessage("Command rename is not allowed in edit source mode.");
+            return;
+        }
         String name = getInputName();
         if (!name.matches("\\w+")) {
             showMessage("Invalid command name.");
@@ -294,12 +303,15 @@ public class MainActivity extends AppCompatActivity {
         }
         if (steps.size()>1) return;
         Command command = steps.activeStep().get(0);
-        //store.renameSource(command.name,name);
         adapter.remove(command.name.replace("_"," "));
-        setAdapter(name);
-        showMessage("Command "+command.name+" renamed.");
-        command.rename(name);
-        //store.saveAll();
+        if (store.containsKey(name)) {
+            showMessage("Command "+name+" already exists.");
+            name = "temp";
+        } else {
+            setAdapter(name);
+        }
+        showMessage("Command "+command.name+" renamed "+name);
+        store.rename(command,name);
     }
     public void onCheckClick(View v) {
         inputText.clearFocus();
@@ -393,10 +405,10 @@ public class MainActivity extends AppCompatActivity {
         command.type = ((EditText)layout.getChildAt(1)).getText().toString().replace(" ","").split("->");
         command.latex = ((EditText)layout.getChildAt(2)).getText().toString();
         command.setBrackets(((EditText)layout.getChildAt(3)).getText().toString());
-        if (store.add(command)) {
+        //if (store.add(command)) {
             adapter.add(command.name.replace("_"," "));
             adapter.notifyDataSetChanged();
-        } //else store.save(command);
+        //} //else store.save(command);
         store.saveAll();
         showMessage("Command source saved.");
         onClearClick(v);

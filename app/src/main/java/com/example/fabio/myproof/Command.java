@@ -91,6 +91,14 @@ public class Command implements Serializable {
         definition = new Token[0];
     }
     void setDefinition(Steps steps) {
+        if (steps.isBlank()) {
+            if (description == null) description = "";
+            if (type == null) type = new String[]{"Variable"};
+            if (latex == null) latex = name;
+            if (brackets == null) brackets = new Bracket[0];
+            definition = new Token[0];
+            return;
+        }
         definition = new Token[steps.size()];
         ArrayList<String> typeList = new ArrayList<>();
         ArrayList<String> argsList = new ArrayList<>();
