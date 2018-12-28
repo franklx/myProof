@@ -119,11 +119,8 @@ class Token : ArrayList<Command> {
     }
 
     internal fun getLeaf(i: Int): Array<Token> {
-        var i = i
-        val output = arrayOfNulls<Token>(arity(i++))
-        for (n in output.indices)
-            output[n] = Token(subList(i, i = next(i)))
-        return output
+        val i = i + 1
+        return (1 .. arity(i)) .map {Token(subList(i, next(i)))} .toTypedArray()
     }
 
     internal operator fun get(i: Int, n: Int): Command {

@@ -73,29 +73,23 @@ internal class Store : HashMap<String, Command>() {
 
     operator fun set(name: String, definition: Steps): Boolean {
         // Set definition to the command with that name
-        if (super.get(name) == null)
+        if (get(name) == null)
             put(name, Command(name, definition))
         else
-            super.get(name)?.setDefinition(definition)
+            get(name)?.setDefinition(definition)
         //save(get(i));
         return true
     }
 
-    operator fun set(i: Int, name: String, source: ArrayList<String>): String {
-        get(i)?.name = name
-        get(i)?.set(source)
-        return names.set(i, name)
-    }
-
     fun update(name: String) {
-        val command = super.get(name)
+        val command = get(name)
         command?.loadDefinition()
     }
 
     override fun get(name: String): Command {
-        if (name.isEmpty()) return super.get("blank") ?: Command()
+        if (name.isEmpty()) return BLANK
         if (isConstant(name)) return Command(name)
-        var output: Command? = super.get(name)
+        var output: Command? = get(name)
         if (output == null) {
             output = Command(name)
             put(name, output)
@@ -103,14 +97,6 @@ internal class Store : HashMap<String, Command>() {
         }
         output.loadDefinition()
         return output
-    }
-
-    private fun indexOf(id: String): Int {
-        return if (id.matches("[0-9]+".toRegex())) {
-            Integer.parseInt(id)
-        } else {
-            names.indexOf(id)
-        }
     }
 
     private fun isConstant(name: String): Boolean {
@@ -157,27 +143,6 @@ internal class Store : HashMap<String, Command>() {
         update()
     }
 
-    private fun loadSource(name: String): ArrayList<String> {
-        val source = ArrayList<String>()
-        try {
-            val fsrc = File(path, getFileName(name))
-            for (line in fsrc.readLines())
-                source.add(line)
-        } catch (e: Exception) {
-        }
-
-        while (source.size < 4) source.add("")
-        return source
-    }
-
-    private fun load(name: String): Command {
-        val source = loadSource(name)
-        return if (name.isEmpty())
-            BLANK
-        else
-            Command(name, source)
-    }
-
     fun save(command: Command) {
         try {
             val file = File(path, getFileName(command.name))
@@ -206,40 +171,6 @@ internal class Store : HashMap<String, Command>() {
             writer.close()
         } catch (e: IOException) {
             e.printStackTrace()
-        }
-
-    }
-
-    fun loadAll() {
-        val source = ArrayList<String>()
-        try {
-            val file = File(path, "commands.txt")
-            val reader = FileReader(file)
-            val buffer = BufferedReader(reader)
-            var i = -1
-            var name = ""
-            while (true) {
-                val line = buffer.readLine()
-                if (line == null || line.matches("@\\d+:.+".toRegex())) {
-                    if (i >= 0) {
-                        while (source.size < 4) source.add("")
-                        set(i, name, source)
-                        source.clear()
-                    }
-                    if (line != null) {
-                        val dot = line.indexOf(":")
-                        if (dot < 0) continue
-                        i = Integer.parseInt(line.substring(1, dot))
-                        name = line.substring(dot + 1)
-                    } else {
-                        //loaded=true;
-                        return
-                    }
-                } else
-                    source.add(line)
-            }
-        } catch (e: Exception) {
-            //loaded=false;
         }
 
     }
