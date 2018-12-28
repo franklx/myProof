@@ -27,8 +27,8 @@ import java.util.Collections
 import io.github.kexanie.library.MathView
 
 import com.example.fabio.myproof.R.layout.file
-import com.example.fabio.myproof.Timing.duration
-import com.example.fabio.myproof.Timing.time
+import com.example.fabio.myproof.Timing.Companion.duration
+import com.example.fabio.myproof.Timing.Companion.time
 
 class MainActivity : AppCompatActivity() {
 
@@ -724,11 +724,6 @@ class MainActivity : AppCompatActivity() {
         val i = layout!!.indexOfChild(v)
         steps!!.reduced[i].toggleSplitStyle()
         showStep(i)
-    }
-
-    companion object {
-        internal var store: Store
-        internal var clipboard: Token
     }
 
 }

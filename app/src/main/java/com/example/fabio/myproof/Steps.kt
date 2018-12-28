@@ -98,7 +98,7 @@ internal class Steps : ArrayList<Token> {
         reduced.add(i, step.reducedCopy(reduced))
     }
 
-    override fun remove(i: Int): Token {
+    fun remove(i: Int): Token {
         reduced.removeAt(i)
         return super.removeAt(i)
     }

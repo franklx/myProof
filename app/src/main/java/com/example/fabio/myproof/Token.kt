@@ -88,14 +88,7 @@ class Token : ArrayList<Command> {
             while (n > size) super.add(store.BLANK)
     }
 
-    internal fun arity(i: Int): Int {
-        try {
-            return get(i).arity()
-        } catch (e: Exception) {
-            return 0
-        }
-
-    }
+    internal fun arity(i: Int): Int = get(i)?.arity()
 
     internal fun next(i: Int): Int {
         var i = i
@@ -254,8 +247,9 @@ class Token : ArrayList<Command> {
                 return
             else {
                 var k = 0
-                var temp: Int
-                while ((temp = next(j)) <= i) {
+                var temp = i + 1
+                while (temp <= i) {
+                    temp = next(j)
                     j = temp
                     k++
                 }
@@ -273,8 +267,9 @@ class Token : ArrayList<Command> {
                 return
             else {
                 var k = 0
-                var temp: Int
-                while ((temp = next(i)) <= index) {
+                var temp = index + 1
+                while (temp <= index) {
+                    temp = next(i)
                     i = temp
                     k++
                 }
@@ -354,8 +349,8 @@ class Token : ArrayList<Command> {
         // Check if token t fits into this token.
         var i = 0
         var j = 0
-        var temp: Token
-        while (i < size)
+        while (i < size) {
+            var temp = getBounderReference(i)
             if (get(i).isGeneric)
             // The subtoken at i is generic
                 if (t[j].check(get(i).output())) {
@@ -363,7 +358,7 @@ class Token : ArrayList<Command> {
                     j = t.next(j)
                 } else
                     return false
-            else if (!(temp = getBounderReference(i)).isBlank)
+            else if (!temp.isBlank)
             // The subtoken at i is bounded
                 if (temp == t.getBounderReference(j)) {
                     i = next(i)
@@ -375,6 +370,7 @@ class Token : ArrayList<Command> {
                 j++
             } else
                 return false
+        }
         return true
     }
 
@@ -530,19 +526,18 @@ class Token : ArrayList<Command> {
     }
 
     internal fun getLaTeXCode(active: Boolean): String {
-        val temp = arrayOfNulls<String>(size)
+        var temp = (size-1 downTo 0) .map {get(it).latex} .toTypedArray()
         for (i in size - 1 downTo 0) {
-            temp[i] = get(i).latex
             var k = i + 1
             for (j in 0 until arity(i)) {
                 if (get(i).brackets!![j].check(get(k)))
                     temp[k] = "\\left(" + temp[k] + "\\right)"
-                temp[i] = temp[i].replace("#" + (j + 1), temp[k])
+                temp[i] = temp[i].replace("#${j+1}", temp[k])
                 k = next(k)
             }
             if (active && i == index)
                 if (get(i).name == "split") {
-                    val list = temp[i].split("\\\\\\\\".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+                    val list = temp[i]?.split("\\\\\\\\".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
                     for (u in list.indices)
                         list[u] = "\\color{Red}{" + list[u] + "}"
                     temp[i] = TextUtils.join("\\\\", list) + "|"
