@@ -19,6 +19,7 @@ class Command : Serializable {
     internal var brackets = emptyArray<Bracket>()
     internal var definition = emptyArray<Token>()
     internal var source = emptyArray<String>()
+    internal var conclusion: Token
     internal val isBlank: Boolean
         get() = name == "blank"
     internal val isError: Boolean
@@ -31,7 +32,7 @@ class Command : Serializable {
             return false
         }
     internal val isReducible: Boolean
-        get() = source.size > 0 || arity() > 0 || name.startsWith("§")
+        get() = definition.size > 0 || arity() > 0 || name.startsWith("§")
     val integerSource: String
         get() {
             val temp = ArrayList<String>()
@@ -50,9 +51,12 @@ class Command : Serializable {
         description = ""
         type = arrayOf("Premise")
         latex = ""
+        // brackets // reset
+        // definition // reset
     }
 
     internal constructor(constant: String) {
+        // definition // reset
         setConstant(constant)
     }
 
@@ -75,6 +79,9 @@ class Command : Serializable {
     internal fun loadDefinition() {
         if (definition.isEmpty())
             definition = Array(source.size) {Token(source[it])}
+        // source // reset
+        if (arity() == 0 && definition.isNotEmpty())
+            conclusion = Token(description)
     }
 
     fun set(fileSource: List<String>) {
@@ -82,7 +89,6 @@ class Command : Serializable {
         type = fileSource[1].split("->".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
         latex = fileSource[2]
         setBrackets(fileSource[3])
-        source = Array(fileSource.size - 4) {fileSource[it + 4]}
         definition = Array(fileSource.size - 4) {Token(fileSource[it + 4])}
     }
 
@@ -93,7 +99,6 @@ class Command : Serializable {
         latex = command.latex
         brackets = command.brackets
         definition = command.definition
-        source = command.source
     }
 
     internal fun setConstant(s: String) {
@@ -110,9 +115,18 @@ class Command : Serializable {
             latex = s
         }
         setBrackets()
+        // definition // reset
     }
 
     internal fun setDefinition(steps: Steps) {
+        if (steps.isBlank) {
+            description = ""
+            type = arrayOf("Variable")
+            latex = name
+            brackets = emptyArray()
+            definition = emptyArray()
+            return
+        }
         definition = steps.toTypedArray()
         source = Array(steps.size) {steps[it].toString()}
         val typeList = ArrayList<String>()
@@ -130,7 +144,7 @@ class Command : Serializable {
                     seqsList.add(code)
             }
         }
-        val conclusion = steps.lastReducedStep
+        conclusion = steps.lastReducedStep
         val args = ("\\(\\begin{array}{l}"
                 + join("\\\\ ", argsList)
                 + "\\end{array}\\)")
@@ -165,12 +179,7 @@ class Command : Serializable {
             brackets[i].set(array[i])
     }
 
-    internal fun getBrackets(): String {
-        val list = arrayOfNulls<String>(brackets.size)
-        for ((i, b) in brackets.withIndex())
-            list[i] = b.toString()
-        return join(",", list)
-    }
+    internal fun getBrackets() = Array(brackets.size) {brackets[it].toString()} .joinToString(",")
 
     internal fun setOutput(output: String) {
         type[arity()] = output
