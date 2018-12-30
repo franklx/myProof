@@ -19,7 +19,7 @@ class Command : Serializable {
     internal var brackets = emptyArray<Bracket>()
     internal var definition = emptyArray<Token>()
     internal var source = emptyArray<String>()
-    internal var conclusion: Token
+    lateinit internal var conclusion: Token
     internal val isBlank: Boolean
         get() = name == "blank"
     internal val isError: Boolean
@@ -128,7 +128,6 @@ class Command : Serializable {
             return
         }
         definition = steps.toTypedArray()
-        source = Array(steps.size) {steps[it].toString()}
         val typeList = ArrayList<String>()
         val argsList = ArrayList<String>()
         val seqsList = ArrayList<String>()
@@ -166,7 +165,7 @@ class Command : Serializable {
     }
 
     private fun setBrackets(n: Int = arity()) {
-        if (brackets.size == n) return
+        if (brackets.size < n) return
         brackets = Array(n) {Bracket()}
     }
 
@@ -216,7 +215,7 @@ class Command : Serializable {
     private fun applyDefinitionTo(arg: Array<Token>): Token {
         // Apply these steps to the list of (reduced) tokens arg.
         val reduced = ArrayList<Token>()
-        if (arg.size == 0 && !description.isEmpty()) return Token(description)
+        if (arg.isEmpty()) return conclusion
         var n = 0
         for (step in definition!!)
             if (step.isGeneric) {
@@ -297,15 +296,15 @@ class Command : Serializable {
     }
 
     override fun hashCode(): Int {
-        return toString().hashCode()
+        return name.hashCode()
     }
 
     override fun toString(): String {
-        return name.replace(" ", "_")
+        return name
     }
 
     fun getSource(): String {
-        val a = arrayOf(description, getType(), latex, getBrackets()) + definition.map {it.toString()}
+        val a = arrayOf(description, getType(), latex, getBrackets()) + definition.map {it.toString()} + arrayOf("@$name")
         return a.joinToString("\n")
     }
 

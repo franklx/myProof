@@ -61,7 +61,7 @@ class DisplayRuleActivity : AppCompatActivity() {
         val required = ArrayList<String>()
         required.addAll(Arrays.asList(*searchText!!.text.toString().split(" ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()))
         displayedCommand!!.clear()
-        for (item in store.names) {
+        for (item in store.keys) {
             list.clear()
             list.addAll(Arrays.asList(*item.split("_".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()))
             if (list.containsAll(required))

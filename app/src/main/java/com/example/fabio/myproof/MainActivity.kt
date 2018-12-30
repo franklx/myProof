@@ -21,14 +21,15 @@ import android.widget.Toast
 
 import com.facebook.stetho.Stetho
 
-import java.io.IOException
-import java.util.Collections
+import java.util.ArrayList
 
 import io.github.kexanie.library.MathView
 
+import com.example.fabio.myproof.Other.Companion.checkName
+import com.example.fabio.myproof.Other.Companion.getExternalName
 import com.example.fabio.myproof.R.layout.file
-import com.example.fabio.myproof.Timing.Companion.duration
-import com.example.fabio.myproof.Timing.Companion.time
+import com.example.fabio.myproof.Other.Companion.duration
+import com.example.fabio.myproof.Other.Companion.time
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,14 +40,20 @@ class MainActivity : AppCompatActivity() {
     private var adapter: ArrayAdapter<String>? = null
     private var steps: Steps? = null
     private var sharedTemp: SharedPreferences? = null
-    companion object {
-        lateinit var store: Store
-        lateinit var clipboard: Token
-    }
     private var confirmDialog: AlertDialog.Builder? = null
     private val inputName: String
         get() {
             var name = inputText!!.text.toString().replace(" ", "_")
+            name = name.replace("_+".toRegex(), "_")
+            if (name.endsWith("_"))
+                name = name.substring(0, name.length - 1)
+            if (name.startsWith("_"))
+                name = name.substring(1, name.length)
+            return name
+        }
+    private val titleName: String
+        get() {
+            var name = title.toString().replace(" ", "_")
             name = name.replace("_+".toRegex(), "_")
             if (name.endsWith("_"))
                 name = name.substring(0, name.length - 1)
@@ -63,7 +70,6 @@ class MainActivity : AppCompatActivity() {
 
         sharedTemp = getSharedPreferences("temp", Context.MODE_PRIVATE)
         store = Store()
-        showMessage(store.path.toString())
         if (!store.load()) showMessage("Warning: loading commands error.")
         //store.loadAll();
         Stetho.initializeWithDefaults(this)
@@ -177,7 +183,9 @@ class MainActivity : AppCompatActivity() {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         }
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1)
-        for (item in store.keys)
+        val names = ArrayList(store.keys)
+        java.util.Collections.sort(names)
+        for (item in names)
             adapter!!.add(item.replace("_", " "))
         inputText!!.setAdapter<ArrayAdapter<String>>(adapter)
     }
@@ -185,8 +193,7 @@ class MainActivity : AppCompatActivity() {
     private fun setAdapter() {
         if (adapter!!.count > 0)
             adapter!!.clear()
-        Collections.sort(store.names)
-        for (item in store.names)
+        for (item in store.keys)
             adapter!!.add(item.replace("_", " "))
         adapter!!.notifyDataSetChanged()
     }
@@ -221,6 +228,7 @@ class MainActivity : AppCompatActivity() {
         layout!!.removeAllViews()
         steps = Steps()
         addMathView()
+        title = "MyProof"
         showStep(0)
     }
 
@@ -233,19 +241,28 @@ class MainActivity : AppCompatActivity() {
         val name = inputName
         saveSteps()
         if (name.isEmpty()) {
-            store.set("temp", steps!!)
-            showMessage("Commands saved.")
-        } else if (store.names.contains(name)) {
+            val title = titleName
+            if (title == "MyProof") {
+                store.set("temp", steps!!)
+                showMessage("Commands saved.")
+            } else {
+                inputText!!.setText(getExternalName(title))
+                confirmDialog!!.setMessage("Overwrite command $title?")
+                confirmDialog!!.show()
+            }
+        } else if (store.containsKey(name)) {
             confirmDialog!!.setMessage("Overwrite command $name?")
             confirmDialog!!.show()
+        } else if (!checkName(name)) {
+            showMessage("Invalid command name.")
+            return
         } else if (store.add(Command(name, steps!!))) {
-            adapter!!.add(name.replace("_", " "))
+            adapter!!.add(getExternalName(name))
             adapter!!.notifyDataSetChanged()
             showMessage("Command $name saved.")
         } else
             showMessage("Command $name not saved.")
         store.saveAll()
-        store.update()
     }
 
     fun onOpenClick(v: View) {
@@ -255,9 +272,10 @@ class MainActivity : AppCompatActivity() {
         if (name.isEmpty()) name = "temp"
         val command = store.get(name)
         time()
-        steps = Steps(command.definition!!)
+        steps = Steps(command.definition)
         time()
         //layout.removeAllViews();
+        title = name
         showSteps()
         enableAutoScroll()
         showMessage(duration.toString())
@@ -284,31 +302,36 @@ class MainActivity : AppCompatActivity() {
 
     fun onUpdateClick(v: View) {
         inputText!!.clearFocus()
-        val name = inputName
-        if (!name.isEmpty()) {
-            store.update(name)
-            showMessage("Command $name updated.")
-        } else {
-            store.update()
-            showMessage("Commands restored.")
-        }
+        store.update()
+        setAdapter()
+        showMessage("Commands restored.")
         steps!!.reduceAll()
         showSteps()
     }
 
     fun onRenameClick(v: View) {
         inputText!!.clearFocus()
-        val name = inputName
-        if (name.isEmpty()) return
+        if (onEditSource()) {
+            showMessage("Command rename is not allowed in edit source mode.")
+            return
+        }
+        var name = inputName
+        if (!checkName(name)) {
+            showMessage("Invalid command name.")
+            return
+        }
         if (steps!!.size > 1) return
         val command = steps!!.activeStep()[0]
-        //store.renameSource(command.name,name);
-        adapter!!.remove(command.name.replace("_", " "))
-        setAdapter(name)
-        showMessage("Command " + command.name + " renamed.")
-        command.rename(name)
-        store.saveAll()
-        //store.save(command);
+        adapter!!.remove(getExternalName(command.name))
+        if (store.containsKey(name)) {
+            showMessage("Command $name already exists.")
+            name = "temp"
+        } else {
+            adapter!!.add(getExternalName(name))
+        }
+        adapter!!.notifyDataSetChanged()
+        showMessage("Command " + command.name + " renamed " + name)
+        store.rename(command, name)
     }
 
     fun onCheckClick(v: View) {
@@ -364,7 +387,12 @@ class MainActivity : AppCompatActivity() {
         if (steps!!.onSelect()) return
         inputText!!.clearFocus()
         val name = inputName
-        if (!name.isEmpty() && steps!!.isBlank) {
+        if (!name.matches("\\w+".toRegex())) {
+            showMessage("Invalid command name.")
+            return
+        }
+        if (steps!!.isBlank) {
+            title = name
             layout!!.removeViewAt(0)
             val command = store.get(name)
             val etDescription = inflateNewEditText()
@@ -393,16 +421,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun saveCommandSource(v: View) {
         val name = inputName
-        if (name.isEmpty()) return
+        if (!name.matches("\\w+".toRegex())) {
+            showMessage("Invalid command name.")
+            return
+        }
         val command = store.get(name)
         command.description = (layout!!.getChildAt(0) as EditText).text.toString()
         command.type = (layout!!.getChildAt(1) as EditText).text.toString().replace(" ", "").split("->".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
         command.latex = (layout!!.getChildAt(2) as EditText).text.toString()
         command.setBrackets((layout!!.getChildAt(3) as EditText).text.toString())
-        if (store.add(command)) {
-            adapter!!.add(command.name.replace("_", " "))
-            adapter!!.notifyDataSetChanged()
-        } //else store.save(command);
+        //if (store.add(command)) {
+        adapter!!.add(command.name.replace("_", " "))
+        adapter!!.notifyDataSetChanged()
+        //} //else store.save(command);
         store.saveAll()
         showMessage("Command source saved.")
         onClearClick(v)
@@ -722,6 +753,11 @@ class MainActivity : AppCompatActivity() {
         val i = layout!!.indexOfChild(v)
         steps!!.reduced[i].toggleSplitStyle()
         showStep(i)
+    }
+
+    companion object {
+        internal lateinit var store: Store
+        internal lateinit var clipboard: Token
     }
 
 }

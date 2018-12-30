@@ -254,7 +254,7 @@ class Token : ArrayList<Command> {
                     k++
                 }
                 active.app(Command("#$k"))
-                active.root().setOutput(get(j).output())   // deprecated
+                //active.root().setOutput(get(j).output());   // deprecated
             }
 
     }
@@ -274,7 +274,7 @@ class Token : ArrayList<Command> {
                     k++
                 }
                 active.app(Command("#$k"))
-                active.root().setOutput(get(i).output())   // deprecated
+                //active.root().setOutput(get(i).output());   // deprecated
             }
 
     }
@@ -324,25 +324,6 @@ class Token : ArrayList<Command> {
         val output = copy()
         output.reduce(reducedSteps)
         return output
-    }
-
-    internal fun oldfits(t: Token): Boolean {
-        // Check if token t fits into this token.
-        var i = 0
-        var j = 0
-        while (i < size)
-            if (get(i).isGeneric)
-                if (t[j].check(get(i).output())) {
-                    i = next(i)
-                    j = t.next(j)
-                } else
-                    return false
-            else if (t[j].equals(get(i))) {
-                i++
-                j++
-            } else
-                return false
-        return true
     }
 
     internal fun fits(t: Token): Boolean {
@@ -493,7 +474,7 @@ class Token : ArrayList<Command> {
     private fun toStringList(): ArrayList<String> {
         val output = ArrayList<String>()
         for (item in this)
-            output.add(item.toString())
+            output.add(item.name)
         return output
     }
 

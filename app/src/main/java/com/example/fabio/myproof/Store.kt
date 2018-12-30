@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils
 
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
@@ -18,13 +17,15 @@ import java.util.Date
 import java.util.HashMap
 
 import android.text.TextUtils.join
+import com.example.fabio.myproof.Other.Companion.isConstant
 
 /**
  * Created by fabio on 20/06/2017.
  */
 
-class Store : HashMap<String, Command>() {
-    var path: File
+internal class Store : HashMap<String, Command>() {
+    protected var path: File
+    //boolean loaded;
     var names: ArrayList<String>
     private val source: ArrayList<String>
     val BLANK = Command()
@@ -33,6 +34,7 @@ class Store : HashMap<String, Command>() {
         path = File(Environment.getExternalStorageDirectory(), "myProof")
         names = ArrayList()
         source = ArrayList()
+        //loaded=false;
     }
 
     fun load(): Boolean {
@@ -47,12 +49,14 @@ class Store : HashMap<String, Command>() {
                put(line.substring(1), Command(line.substring(1), temp))
                temp = ArrayList<String>()
             }
-            return true
         } catch (e: Exception) {
             Log.e("cmd", e.toString(), e)
             return false
         }
 
+        for (command in values.toTypedArray<Command>())
+            command.loadDefinition()
+        return true
     }
 
     private fun getFileName(name: String): String {
@@ -79,35 +83,21 @@ class Store : HashMap<String, Command>() {
         return true
     }
 
-    fun update(name: String) {
-        val command = get(name)
-        command?.loadDefinition()
-    }
-
     override fun get(name: String): Command {
         if (name.isEmpty()) return BLANK
-        if (isConstant(name)) return Command(name)
-        var output: Command? = get(name)
+        //if (isConstant(name)) return new Command(name);
+        var output: Command? = super.get(name)
         if (output == null) {
             output = Command(name)
+            //if (name.matches("\\w+"))
             put(name, output)
             return output
         }
-        output.loadDefinition()
         return output
-    }
-
-    private fun isConstant(name: String): Boolean {
-        if (name.startsWith("\\")) return true
-        if (name.startsWith("§")) return true
-        return if (name.startsWith("#")) true else false
-        //if (name.length()==1) return true;
     }
 
     fun update() {
         clear()
-        names.clear()
-        source.clear()
         load()
     }
 
@@ -141,6 +131,12 @@ class Store : HashMap<String, Command>() {
         update()
     }
 
+    fun rename(command: Command, newName: String) {
+        remove(command.name)
+        command.rename(newName)
+        put(newName,command)
+    }
+
     fun save(command: Command) {
         try {
             val file = File(path, getFileName(command.name))
@@ -159,10 +155,10 @@ class Store : HashMap<String, Command>() {
         try {
             val writer = FileWriter(file)
             for (command in values) {
+                if (isConstant(command.name)) continue
+                if (command.output() == "Variable" && command.name == command.latex)
+                    continue
                 writer.append(command.getSource())
-                writer.append("\n")
-                writer.append("@")
-                writer.append(command.name)
                 writer.append("\n")
             }
             writer.flush()
