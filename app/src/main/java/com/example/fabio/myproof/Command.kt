@@ -16,9 +16,9 @@ class Command : Serializable {
     lateinit internal var description: String
     lateinit var type: Array<String>
     lateinit internal var latex: String
-    internal var brackets: Array<Bracket>? = null
-    internal var definition: Array<Token>? = null
-    lateinit internal var source: Array<String>
+    internal var brackets = emptyArray<Bracket>()
+    internal var definition = emptyArray<Token>()
+    internal var source = emptyArray<String>()
     internal val isBlank: Boolean
         get() = name == "blank"
     internal val isError: Boolean
@@ -40,7 +40,7 @@ class Command : Serializable {
             temp.add(getType())
             temp.add(latex)
             temp.add(getBrackets())
-            for (step in definition!!)
+            for (step in definition)
                 temp.add(step.toIntegerString())
             return join("\n", temp)
         }
@@ -50,13 +50,9 @@ class Command : Serializable {
         description = ""
         type = arrayOf("Premise")
         latex = ""
-        brackets = arrayOfNulls(0)
-        definition = arrayOfNulls(0)
-        source = arrayOfNulls(0)
     }
 
     internal constructor(constant: String) {
-        definition = arrayOfNulls(0)
         setConstant(constant)
     }
 
@@ -73,17 +69,12 @@ class Command : Serializable {
         type = fileSource[1].split("->".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
         latex = fileSource[2]
         setBrackets(fileSource[3])
-        source = arrayOfNulls(fileSource.size - 4)
-        for (i in source.indices)
-            source[i] = fileSource[i + 4]
+        source = Array(fileSource.size - 4) {fileSource[it + 4]}
     }
 
     internal fun loadDefinition() {
-        if (definition == null) {
-            definition = arrayOfNulls(source.size)
-            for (i in definition!!.indices)
-                definition[i] = Token(source[i])
-        }
+        if (definition.isEmpty())
+            definition = Array(source.size) {Token(source[it])}
     }
 
     fun set(fileSource: List<String>) {
@@ -91,12 +82,8 @@ class Command : Serializable {
         type = fileSource[1].split("->".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
         latex = fileSource[2]
         setBrackets(fileSource[3])
-        source = arrayOfNulls(fileSource.size - 4)
-        definition = arrayOfNulls(fileSource.size - 4)
-        for (i in definition!!.indices) {
-            source[i] = fileSource[i + 4]
-            definition[i] = Token(fileSource[i + 4])
-        }
+        source = Array(fileSource.size - 4) {fileSource[it + 4]}
+        definition = Array(fileSource.size - 4) {Token(fileSource[it + 4])}
     }
 
     fun setCommand(command: Command) {
@@ -123,21 +110,17 @@ class Command : Serializable {
             latex = s
         }
         setBrackets()
-        definition = arrayOfNulls(0)
-        source = arrayOfNulls(0)
     }
 
     internal fun setDefinition(steps: Steps) {
-        definition = arrayOfNulls(steps.size)
-        source = arrayOfNulls(steps.size)
+        definition = steps.toTypedArray()
+        source = Array(steps.size) {steps[it].toString()}
         val typeList = ArrayList<String>()
         val argsList = ArrayList<String>()
         val seqsList = ArrayList<String>()
         var output: String
         var code: String
         for (i in steps.indices) {
-            definition[i] = steps[i]
-            source[i] = steps[i].toString()
             if (steps[i].isGeneric) {
                 output = steps.reduced[i][0].output()
                 code = steps.reduced[i].laTeXCode
@@ -169,27 +152,23 @@ class Command : Serializable {
     }
 
     private fun setBrackets(n: Int = arity()) {
-        if (brackets == null || brackets!!.size < n)
-            brackets = arrayOfNulls(n)
-        else
-            return
-        for (i in 0 until n)
-            brackets[i] = Bracket()
+        if (brackets.size == n) return
+        brackets = Array(n) {Bracket()}
     }
 
     internal fun setBrackets(source: String) {
         setBrackets()
         val array = source.split(",".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
         var n = array.size
-        if (brackets!!.size < n) n = brackets!!.size
+        if (brackets.size < n) n = brackets.size
         for (i in 0 until n)
-            brackets!![i].set(array[i])
+            brackets[i].set(array[i])
     }
 
     internal fun getBrackets(): String {
-        val list = arrayOfNulls<String>(brackets!!.size)
-        for (i in brackets!!.indices)
-            list[i] = brackets!![i].toString()
+        val list = arrayOfNulls<String>(brackets.size)
+        for ((i, b) in brackets.withIndex())
+            list[i] = b.toString()
         return join(",", list)
     }
 
@@ -285,7 +264,7 @@ class Command : Serializable {
                 }
                 "drop"   // Drop the statement from the premise.
                 -> {
-                    premise = arg[0].toHashSet()
+                    var premise = arg[0].toHashSet()
                     premise.remove(arg[1])
                     return Token(premise)
                 }
@@ -296,11 +275,9 @@ class Command : Serializable {
                         temp.app("next")
                     return temp
                 }
-                "free" -> return if (!arg[0].hasFreeOccurrenceOf(0, arg[1]))
-                // Reduces if arg[0] doesn't contains free occurrence of arg[1].
-                    arg[0]
-                else
-                    break
+                "free" -> if (!arg[0].hasFreeOccurrenceOf(0, arg[1]))
+                    // Reduces if arg[0] doesn't contains free occurrence of arg[1].
+                        return arg[0]
                 "substitute" -> return arg[0].substitution(arg[1], arg[2])
             }
         } catch (e: Exception) {
@@ -319,14 +296,8 @@ class Command : Serializable {
     }
 
     fun getSource(): String {
-        val temp = ArrayList<String>()
-        temp.add(description)
-        temp.add(getType())
-        temp.add(latex)
-        temp.add(getBrackets())
-        for (step in definition!!)
-            temp.add(step.toString())
-        return join("\n", temp)
+        val a = arrayOf(description, getType(), latex, getBrackets()) + definition.map {it.toString()}
+        return a.joinToString("\n")
     }
 
     internal fun rename(newName: String) {

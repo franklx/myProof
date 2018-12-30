@@ -9,7 +9,7 @@ import android.text.TextUtils.join
  * Created by fabio on 09/04/2017.
  */
 
-internal class Steps : ArrayList<Token> {
+class Steps : ArrayList<Token> {
     var reduced: ArrayList<Token>
     var active: Int = 0
     var select: Int = 0
@@ -98,7 +98,7 @@ internal class Steps : ArrayList<Token> {
         reduced.add(i, step.reducedCopy(reduced))
     }
 
-    fun remove(i: Int): Token {
+    override fun removeAt(i: Int): Token {
         reduced.removeAt(i)
         return super.removeAt(i)
     }

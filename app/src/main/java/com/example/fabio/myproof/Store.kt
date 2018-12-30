@@ -23,9 +23,8 @@ import android.text.TextUtils.join
  * Created by fabio on 20/06/2017.
  */
 
-internal class Store : HashMap<String, Command>() {
+class Store : HashMap<String, Command>() {
     var path: File
-    //boolean loaded;
     var names: ArrayList<String>
     private val source: ArrayList<String>
     val BLANK = Command()
@@ -34,7 +33,6 @@ internal class Store : HashMap<String, Command>() {
         path = File(Environment.getExternalStorageDirectory(), "myProof")
         names = ArrayList()
         source = ArrayList()
-        //loaded=false;
     }
 
     fun load(): Boolean {
@@ -42,7 +40,7 @@ internal class Store : HashMap<String, Command>() {
             val cmdf = File(path, "commands.txt")
             var temp = ArrayList<String>()
             for(line in cmdf.readLines()) {
-                if(line.startsWith('@')) {
+                if(!line.startsWith('@')) {
                     temp.add(line)
                     continue
                 }
@@ -51,7 +49,7 @@ internal class Store : HashMap<String, Command>() {
             }
             return true
         } catch (e: Exception) {
-            Log.e("cmd", e.toString())
+            Log.e("cmd", e.toString(), e)
             return false
         }
 

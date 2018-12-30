@@ -113,7 +113,7 @@ class Token : ArrayList<Command> {
 
     internal fun getLeaf(i: Int): Array<Token> {
         val i = i + 1
-        return (1 .. arity(i)) .map {Token(subList(i, next(i)))} .toTypedArray()
+        return Array(arity(i)) {Token(subList(i, next(i)))}
     }
 
     internal operator fun get(i: Int, n: Int): Command {
@@ -526,7 +526,8 @@ class Token : ArrayList<Command> {
     }
 
     internal fun getLaTeXCode(active: Boolean): String {
-        var temp = (size-1 downTo 0) .map {get(it).latex} .toTypedArray()
+        var temp = Array(size) {get(size-it-1).latex}
+        //var temp = (size-1 downTo 0) .map {get(it).latex} .toTypedArray()
         for (i in size - 1 downTo 0) {
             var k = i + 1
             for (j in 0 until arity(i)) {

@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
                     val name = inputName
-                    if (store.set(name, steps)) {
+                    if (store.set(name, steps!!)) {
                         store.saveAll()
                         showMessage("Command $name saved.")
                     } else
@@ -233,12 +233,12 @@ class MainActivity : AppCompatActivity() {
         val name = inputName
         saveSteps()
         if (name.isEmpty()) {
-            store.set("temp", steps)
+            store.set("temp", steps!!)
             showMessage("Commands saved.")
         } else if (store.names.contains(name)) {
             confirmDialog!!.setMessage("Overwrite command $name?")
             confirmDialog!!.show()
-        } else if (store.add(Command(name, steps))) {
+        } else if (store.add(Command(name, steps!!))) {
             adapter!!.add(name.replace("_", " "))
             adapter!!.notifyDataSetChanged()
             showMessage("Command $name saved.")
@@ -316,9 +316,7 @@ class MainActivity : AppCompatActivity() {
         saveSteps()
         val check = steps!![steps!!.active]
         inputText!!.setText(check[0].name.replace("_", " "))
-        val arg = arrayOfNulls<Token>(check[0].arity())
-        for (n in arg.indices)
-            arg[n] = check.leaf(0, n).reducedCopy(steps!!.reduced)
+        val arg = Array(check[0].arity()) {check.leaf(0, it).reducedCopy(steps!!.reduced)}
         steps = Steps(check[0].definition!!, arg)
         layout!!.removeAllViews()
         showSteps()
