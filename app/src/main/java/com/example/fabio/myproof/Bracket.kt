@@ -3,8 +3,6 @@ package com.example.fabio.myproof
 import java.util.ArrayList
 import java.util.Arrays
 
-import android.text.TextUtils.join
-
 /**
  * Created by fabio on 29/03/2017.
  */
@@ -13,12 +11,10 @@ internal class Bracket : ArrayList<String>() {
     fun set(source: String) {
         clear()
         if (source.isEmpty()) return
-        addAll(Arrays.asList(*source.split(" ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()))
+        addAll(Arrays.asList(*source.split(" ".toRegex()).dropLastWhile { it.isEmpty() } .toTypedArray()))
     }
 
-    override fun toString(): String {
-        return join(" ", this)
-    }
+    override fun toString(): String = joinToString(" ")
 
     fun check(command: Command): Boolean {
         var output = false

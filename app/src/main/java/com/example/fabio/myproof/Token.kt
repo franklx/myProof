@@ -1,7 +1,5 @@
 package com.example.fabio.myproof
 
-import android.text.TextUtils
-
 import java.util.ArrayList
 import java.util.HashSet
 
@@ -63,7 +61,7 @@ class Token : ArrayList<Command> {
         if (source.isEmpty())
             super.add(store.BLANK)
         else
-            for (item in source.split(" ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()) {
+            for (item in source.split(" ".toRegex()).dropLastWhile { it.isEmpty() } .toTypedArray()) {
                 super.add(store.get(item))
             }
         index = 0
@@ -471,12 +469,7 @@ class Token : ArrayList<Command> {
         return output
     }
 
-    private fun toStringList(): ArrayList<String> {
-        val output = ArrayList<String>()
-        for (item in this)
-            output.add(item.name)
-        return output
-    }
+    private fun toStringList(): ArrayList<String> = ArrayList(map {it.name})
 
     private fun toIntegerStringList(): ArrayList<String> {
         val output = ArrayList<String>()
@@ -498,13 +491,9 @@ class Token : ArrayList<Command> {
         return hashCode() == o!!.hashCode()
     }
 
-    override fun toString(): String {
-        return TextUtils.join(" ", toStringList())
-    }
+    override fun toString() = toStringList().joinToString(" ")
 
-    fun toIntegerString(): String {
-        return TextUtils.join(" ", toIntegerStringList())
-    }
+    fun toIntegerString() = toIntegerStringList().joinToString(" ")
 
     internal fun getLaTeXCode(active: Boolean): String {
         var temp = Array(size) {get(size-it-1).latex}
@@ -518,10 +507,10 @@ class Token : ArrayList<Command> {
             }
             if (active && i == index)
                 if (get(i).name == "split") {
-                    val list = temp[i]?.split("\\\\\\\\".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+                    val list = temp[i]?.split("\\\\\\\\".toRegex()).dropLastWhile { it.isEmpty() } .toTypedArray()
                     for (u in list.indices)
                         list[u] = "\\color{Red}{" + list[u] + "}"
-                    temp[i] = TextUtils.join("\\\\", list) + "|"
+                    temp[i] = list.joinToString("\\\\", postfix = "|")
                 } else if (!temp[i].contains("$$"))
                     temp[i] = "\\color{Red}{" + temp[i] + "}|"
         }

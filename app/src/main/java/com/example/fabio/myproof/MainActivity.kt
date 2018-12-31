@@ -33,10 +33,11 @@ import java.util.ArrayList
 import io.github.kexanie.library.MathView
 
 import com.example.fabio.myproof.Other.Companion.checkName
-import com.example.fabio.myproof.Other.Companion.getExternalName
-import com.example.fabio.myproof.R.layout.file
 import com.example.fabio.myproof.Other.Companion.duration
+import com.example.fabio.myproof.Other.Companion.getExternalName
 import com.example.fabio.myproof.Other.Companion.time
+
+import com.example.fabio.myproof.R.layout.file
 
 class MainActivity : AppCompatActivity() {
 

@@ -3,8 +3,6 @@ package com.example.fabio.myproof
 import android.os.Environment
 import android.util.Log
 
-import org.apache.commons.io.FileUtils
-
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -12,9 +10,9 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Calendar
 
-import android.text.TextUtils.join
-import com.example.fabio.myproof.Other.Companion.isConstant
 import kotlin.collections.HashMap
+
+import com.example.fabio.myproof.Other.Companion.isConstant
 
 /**
  * Created by fabio on 20/06/2017.
@@ -115,10 +113,10 @@ internal class Store : HashMap<String, Command>() {
                                 words.add(newName)
                             else
                                 words.add(item)
-                        lines.add(join(" ", words))
+                        lines.add(words.joinToString(" "))
                     }
                     val writer = FileWriter(child)
-                    writer.append(join("\n", lines))
+                    writer.append(lines.joinToString("\n"))
                     writer.flush()
                     writer.close()
                 } catch (e: Exception) {
@@ -169,7 +167,7 @@ internal class Store : HashMap<String, Command>() {
         val backup = File(path, "backup.txt")
         val source = File(path, "commands.txt")
         try {
-            FileUtils.copyFile(source, backup)
+            source.copyTo(backup)
             return true
         } catch (e: IOException) {
             return false
@@ -182,7 +180,7 @@ internal class Store : HashMap<String, Command>() {
         val source = File(path, getFileName(name))
         val target = File(backup, getFileName(name))
         try {
-            FileUtils.copyFile(source, target)
+            source.copyTo(target)
             return true
         } catch (e: Exception) {
             return false
@@ -194,7 +192,7 @@ internal class Store : HashMap<String, Command>() {
         val backup = File(path, "backup.txt")
         val target = File(path, "commands.txt")
         try {
-            FileUtils.copyFile(backup, target)
+            backup.copyTo(target)
             return true
         } catch (e: IOException) {
             return false
@@ -218,7 +216,7 @@ internal class Store : HashMap<String, Command>() {
     fun importPack(name: String): Boolean {
         val pack = File(path.parent, "/$name")
         try {
-            FileUtils.copyDirectory(pack, path)
+            pack.copyRecursively(path)
             update()
             return true
         } catch (e: Exception) {
@@ -230,7 +228,7 @@ internal class Store : HashMap<String, Command>() {
     fun savePack(name: String): Boolean {
         val pack = File(path.parent, "/$name")
         try {
-            FileUtils.copyDirectory(path, pack)
+            path.copyRecursively(pack)
             return true
         } catch (e: Exception) {
             return false
@@ -245,9 +243,9 @@ internal class Store : HashMap<String, Command>() {
         val backup = File(path.parent, "/Backup")
         val copy = File(path.parent, "/$reportDate Backup")
         try {
-            FileUtils.copyDirectory(backup, copy)
-            FileUtils.copyDirectory(path, backup)
-            FileUtils.cleanDirectory(path)
+            backup.renameTo(copy)
+            path.renameTo(backup)
+            path.mkdir()
             update()
             return true
         } catch (e: Exception) {

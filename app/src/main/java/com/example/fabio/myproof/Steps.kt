@@ -3,8 +3,6 @@ package com.example.fabio.myproof
 import java.util.ArrayList
 import java.util.Arrays
 
-import android.text.TextUtils.join
-
 /**
  * Created by fabio on 09/04/2017.
  */
@@ -276,6 +274,6 @@ class Steps : ArrayList<Token> {
         val list = ArrayList<String>()
         for (step in this)
             list.add(step.toString())
-        return join("\n", list)
+        return list.joinToString("\n")
     }
 }

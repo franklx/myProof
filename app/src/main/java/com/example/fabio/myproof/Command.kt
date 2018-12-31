@@ -2,9 +2,7 @@ package com.example.fabio.myproof
 
 import java.io.Serializable
 import java.util.ArrayList
-import java.util.HashSet
 
-import android.text.TextUtils.join
 import com.example.fabio.myproof.MainActivity.Companion.store
 
 /**
@@ -43,7 +41,7 @@ class Command : Serializable {
             temp.add(getBrackets())
             for (step in definition)
                 temp.add(step.toIntegerString())
-            return join("\n", temp)
+            return temp.joinToString("\n")
         }
 
     internal constructor() { //Construct a blank command
@@ -145,13 +143,13 @@ class Command : Serializable {
         }
         conclusion = steps.lastReducedStep
         val args = ("\\(\\begin{array}{l}"
-                + join("\\\\ ", argsList)
+                + argsList.joinToString("\\\\ ")
                 + "\\end{array}\\)")
         if (typeList.isEmpty())
             latex = conclusion.laTeXCode
         else
             latex = ("$$\\frac{"
-                    + join("\\quad ", seqsList)
+                    + seqsList.joinToString("\\quad ")
                     + "}{"
                     + conclusion.laTeXCode
                     + "}\\text{("
@@ -186,7 +184,7 @@ class Command : Serializable {
     }
 
     internal fun getType(): String {
-        return join("->", type)
+        return type.joinToString("->")
     }
 
     internal fun arity(): Int {
