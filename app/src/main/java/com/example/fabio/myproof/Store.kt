@@ -5,19 +5,16 @@ import android.util.Log
 
 import org.apache.commons.io.FileUtils
 
-import java.io.BufferedReader
 import java.io.File
-import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Calendar
-import java.util.Date
-import java.util.HashMap
 
 import android.text.TextUtils.join
 import com.example.fabio.myproof.Other.Companion.isConstant
+import kotlin.collections.HashMap
 
 /**
  * Created by fabio on 20/06/2017.
@@ -78,7 +75,7 @@ internal class Store : HashMap<String, Command>() {
         if (get(name) == null)
             put(name, Command(name, definition))
         else
-            get(name)?.setDefinition(definition)
+            get(name).setDefinition(definition)
         //save(get(i));
         return true
     }
@@ -103,7 +100,6 @@ internal class Store : HashMap<String, Command>() {
 
     fun renameSource(oldName: String, newName: String) {
         val directory = path.listFiles() ?: return
-        var line: String
         val words = ArrayList<String>()
         val lines = ArrayList<String>()
         for (child in directory)
@@ -176,7 +172,6 @@ internal class Store : HashMap<String, Command>() {
             FileUtils.copyFile(source, backup)
             return true
         } catch (e: IOException) {
-            val a = 5
             return false
         }
 

@@ -1,10 +1,17 @@
 package com.example.fabio.myproof
 
+import android.Manifest
+import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.MotionEvent
@@ -70,6 +77,8 @@ class MainActivity : AppCompatActivity() {
 
         sharedTemp = getSharedPreferences("temp", Context.MODE_PRIVATE)
         store = Store()
+        //ContextCompat.checkSelfPermission(thisActivity, Manifest.permission.)
+        CheckStoragePermission(this)
         if (!store.load()) showMessage("Warning: loading commands error.")
         //store.loadAll();
         Stetho.initializeWithDefaults(this)
@@ -120,11 +129,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun test(v: View) {
-        steps!!.reduceAll()
-        showSteps()
-    }
-
     public override fun onResume() {
         super.onResume()
         steps!!.seek()
@@ -149,7 +153,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setConfirmDialog() {
-        val dialogSaveClickListener = DialogInterface.OnClickListener { dialog, which ->
+        val dialogSaveClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
                     val name = inputName
@@ -340,7 +344,7 @@ class MainActivity : AppCompatActivity() {
         val check = steps!![steps!!.active]
         inputText!!.setText(check[0].name.replace("_", " "))
         val arg = Array(check[0].arity()) {check.leaf(0, it).reducedCopy(steps!!.reduced)}
-        steps = Steps(check[0].definition!!, arg)
+        steps = Steps(check[0].definition, arg)
         layout!!.removeAllViews()
         showSteps()
         enableAutoScroll()
@@ -753,6 +757,14 @@ class MainActivity : AppCompatActivity() {
         val i = layout!!.indexOfChild(v)
         steps!!.reduced[i].toggleSplitStyle()
         showStep(i)
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    fun CheckStoragePermission(context: Context) {
+        val permissionCheckRead = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (permissionCheckRead != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        }
     }
 
     companion object {

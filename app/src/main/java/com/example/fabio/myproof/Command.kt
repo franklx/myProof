@@ -70,7 +70,7 @@ class Command : Serializable {
         while (fileSource.size < 4)
             fileSource.add("")
         description = fileSource[0]
-        type = fileSource[1].split("->".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+        type = fileSource[1].split("->".toRegex()).dropLastWhile { it.isEmpty() } .toTypedArray()
         latex = fileSource[2]
         setBrackets(fileSource[3])
         source = Array(fileSource.size - 4) {fileSource[it + 4]}
@@ -165,13 +165,14 @@ class Command : Serializable {
     }
 
     private fun setBrackets(n: Int = arity()) {
-        if (brackets.size < n) return
+        //if (brackets.size < n) return
+        if(n <= 0) return
         brackets = Array(n) {Bracket()}
     }
 
     internal fun setBrackets(source: String) {
         setBrackets()
-        val array = source.split(",".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+        val array = source.split(",".toRegex()).dropLastWhile { it.isEmpty() } .toTypedArray()
         var n = array.size
         if (brackets.size < n) n = brackets.size
         for (i in 0 until n)
@@ -217,7 +218,7 @@ class Command : Serializable {
         val reduced = ArrayList<Token>()
         if (arg.isEmpty()) return conclusion
         var n = 0
-        for (step in definition!!)
+        for (step in definition)
             if (step.isGeneric) {
                 if (!step.reducedCopy(reduced).fits(arg[n]))
                     return Token("error")
@@ -245,7 +246,7 @@ class Command : Serializable {
                 return Token("error")
         try {
             // root has definition.
-            if (definition!!.size > 0)
+            if (definition.size > 0)
                 return applyDefinitionTo(arg)
             // root is a reference.
             if (name.startsWith("§")) {
