@@ -86,7 +86,7 @@ class Token : ArrayList<Command> {
             while (n > size) super.add(store.BLANK)
     }
 
-    internal fun arity(i: Int): Int = get(i)?.arity()
+    internal fun arity(i: Int): Int = get(i).arity()
 
     internal fun next(i: Int): Int {
         var i = i
@@ -469,18 +469,11 @@ class Token : ArrayList<Command> {
         return output
     }
 
-    private fun toStringList(): ArrayList<String> = ArrayList(map {it.name})
+    private fun toStringList(): List<String> = map {it.name}
 
-    private fun toIntegerStringList(): ArrayList<String> {
-        val output = ArrayList<String>()
-        for (item in this) {
-            val i = store.names.indexOf(item.name)
-            if (i < 0)
-                output.add(item.name)
-            else
-                output.add(Integer.toString(i))
-        }
-        return output
+    private fun toIntegerStringList(): List<String> = map {
+        val i = store.names.indexOf(it.name)
+        if (i<0) {it.name} else {i.toString()}
     }
 
     override fun hashCode(): Int {
